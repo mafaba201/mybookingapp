@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npm run prebuild && ng serve",
     "prebuild": "node scripts/pre-build.js",
     "build": "npm run prebuild && ng build",
     "build:dev": "npm run prebuild && ng build",

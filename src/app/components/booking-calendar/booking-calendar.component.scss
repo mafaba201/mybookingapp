@@ -35,18 +35,16 @@
   border-radius: 12px;
   margin-bottom: 20px;
   display: flex;
-  align-items: center;
-  gap: 15px;
+  flex-direction: column;
+  gap: 10px;
   
   label {
     color: #fff;
     font-weight: 500;
-    white-space: nowrap;
   }
   
   select {
-    flex: 1;
-    max-width: 300px;
+    width: 100%;
     padding: 10px 15px;
     border: 2px solid rgba(255, 215, 0, 0.3);
     border-radius: 8px;
