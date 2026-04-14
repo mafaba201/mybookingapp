@@ -1,0 +1,98 @@
+<div class="usuarios-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goBack()">
+      <span class="logo-icon">🕐</span>
+      <span class="logo-text">Barbería</span>
+    </div>
+    <div class="nav-links desktop-only">
+      <button class="nav-btn-outline" (click)="goBack()">← Volver</button>
+    </div>
+    <button class="hamburger-btn mobile-only" (click)="toggleMobileMenu(); $event.stopPropagation()">
+      @if (mobileMenuOpen) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      }
+    </button>
+    @if (mobileMenuOpen) {
+      <div class="mobile-menu" (click)="$event.stopPropagation()">
+        <button class="mobile-menu-btn" (click)="goBack()">← Volver</button>
+      </div>
+    }
+  </nav>
+
+  <div class="usuarios-container">
+    <div class="form-card">
+      <h2>Horario de Trabajo</h2>
+      <p class="subtitle">Agrega tus ventanas de tiempo por día</p>
+      
+      @if (errorMessage && errorMessage !== '') {
+        <div class="error-message">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage && successMessage !== '') {
+        <div class="success-message">{{ successMessage }}</div>
+      }
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Día</label>
+          <select [(ngModel)]="selectedDay">
+            <option [ngValue]="''">Selecciona un día</option>
+            @for (day of days; track day) {
+              <option [ngValue]="day">{{ day }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Desde</label>
+          <input type="time" [(ngModel)]="startTime" />
+        </div>
+
+        <div class="form-group">
+          <label>Hasta</label>
+          <input type="time" [(ngModel)]="endTime" />
+        </div>
+
+        <button type="button" class="add-btn" (click)="addTimeSlot()">Agregar</button>
+      </div>
+    </div>
+
+    @if (timeSlots.length > 0) {
+      <div class="users-table-section">
+        <h3>Horarios Registrados</h3>
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Hora Inicio</th>
+              <th>Hora Fin</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (slot of timeSlots; track $index) {
+              <tr>
+                <td>{{ slot.day }}</td>
+                <td>{{ slot.startTime }}</td>
+                <td>{{ slot.endTime }}</td>
+                <td class="actions">
+                  <button class="action-btn delete" title="Eliminar" (click)="removeTimeSlot($index)">🗑️</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <button type="button" class="submit-btn" (click)="saveSchedule()" [disabled]="loading">
+          @if (loading) {
+            Guardando...
+          } @else {
+            Guardar Horario
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>

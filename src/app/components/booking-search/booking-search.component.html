@@ -1,0 +1,157 @@
+<div class="booking-search-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goBack()">
+      <span class="logo-icon">✂</span>
+      <span class="logo-text">Barbería</span>
+    </div>
+    <div class="nav-links desktop-only">
+      <button class="nav-btn-outline" (click)="goBack()">← Volver</button>
+    </div>
+    <button class="hamburger-btn mobile-only" (click)="toggleMobileMenu(); $event.stopPropagation()">
+      @if (mobileMenuOpen) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      }
+    </button>
+    @if (mobileMenuOpen) {
+      <div class="mobile-menu" (click)="$event.stopPropagation()">
+        <button class="mobile-menu-btn" (click)="goBack()">← Volver</button>
+      </div>
+    }
+  </nav>
+
+  <div class="booking-search-container">
+    @if (loading) {
+      <div class="loading">Cargando...</div>
+    } @else {
+      <div class="user-select">
+        <label for="barber-select">Selecciona barbero:</label>
+        <select id="barber-select" (change)="selectUser($event)">
+          <option value="">-- Seleccionar --</option>
+          @for (user of users; track user.id) {
+            <option [value]="user.id">{{ user.user }}</option>
+          }
+        </select>
+      </div>
+      
+      <div class="calendar-column">
+        <div class="calendar-header">
+          <button (click)="previousMonth()">←</button>
+          <h3>{{ monthYear }}</h3>
+          <button (click)="nextMonth()">→</button>
+        </div>
+        
+        <div class="calendar-grid">
+          @for (day of weekDays; track day) {
+            <div class="weekday">{{ day }}</div>
+          }
+          @for (day of daysInMonth; track $index) {
+            <div 
+              class="day" 
+              [class.empty]="day === 0"
+              [class.today]="isToday(day)"
+              [class.selected]="isSelected(day)"
+              [class.past]="isPast(day)"
+              (click)="selectDate(day)"
+            >
+              {{ day }}
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (selectedDateValue()) {
+        <div class="bookings-card">
+          @if (!selectedUserId) {
+            <div class="no-bookings">Selecciona un barbero para ver las citas</div>
+          } @else if (loadingBookings()) {
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+              <p>Cargando citas...</p>
+            </div>
+          } @else if (bookings().length > 0) {
+            <h4>Citas del Día</h4>
+            <table class="bookings-table">
+              <thead>
+                <tr>
+                  <th>Hora</th>
+                  <th>Cliente</th>
+                  <th>Teléfono</th>
+                  <th>Email</th>
+                  <th class="desktop-actions-header"></th>
+                  <th class="desktop-actions-header"></th>
+                  <th class="desktop-actions-header"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (booking of bookings(); track booking.id) {
+                  <tr (click)="toggleBookingActions(booking.id)" [class.canceled-row]="booking.canceled">
+                    <td>{{ booking.start_time }}</td>
+                    <td>{{ booking.client?.name }}</td>
+                    <td>{{ booking.client?.phone }}</td>
+                    <td>{{ booking.client?.email }}</td>
+                    <td class="desktop-actions-header">
+                      <button class="view-btn" (click)="viewBooking(booking); $event.stopPropagation()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                      </button>
+                    </td>
+                    <td class="desktop-actions-header">
+                      <button class="message-btn" (click)="openWhatsApp(booking.client?.phone); $event.stopPropagation()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                      </button>
+                    </td>
+                    <td class="desktop-actions-header">
+                      <button 
+                        class="cancel-btn" 
+                        [class.disabled]="booking.canceled" 
+                        [disabled]="booking.canceled"
+                        (click)="cancelBooking(booking); $event.stopPropagation()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="no-bookings">No hay citas programadas para este día</div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Servicios de la Cita</h3>
+        <button class="modal-close" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        @if (loadingServices()) {
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Cargando servicios...</p>
+          </div>
+        } @else if (selectedBookingServices.length > 0) {
+          <ul class="services-list">
+            @for (service of selectedBookingServices; track service) {
+              <li>{{ service }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="no-services">No hay servicios registrados</p>
+        }
+      </div>
+    </div>
+  </div>
+}

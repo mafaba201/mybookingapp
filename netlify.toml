@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist/mybooking-app"
+
+[build.environment]
+  NODE_VERSION = "20"
+  SUPABASE_URL = "https://muhryzawpqdihoikskne.supabase.co"
+  SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11aHJ5emF3cHFkaWhvaWtza25lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5Njk4MTcsImV4cCI6MjA5MTU0NTgxN30.hgvjKVMyvjdIQzydQfcGxZnEEgza7KR-lCqcIyD6wNg"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,201 @@
+<div class="usuarios-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goHome()">
+      <span class="logo-icon">✂</span>
+      <span class="logo-text">Barbería</span>
+    </div>
+    <div class="nav-links desktop-only">
+      <button class="nav-btn-outline" (click)="goBack()">← Volver</button>
+    </div>
+    <button class="hamburger-btn mobile-only" (click)="toggleMobileMenu(); $event.stopPropagation()">
+      @if (mobileMenuOpen) {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      }
+    </button>
+    @if (mobileMenuOpen) {
+      <div class="mobile-menu" (click)="$event.stopPropagation()">
+        <button class="mobile-menu-btn" (click)="goBack()">← Volver</button>
+      </div>
+    }
+  </nav>
+
+  <div class="usuarios-container">
+    <div class="form-card">
+      <h2>{{ editingUserId ? 'Actualizar Usuario' : 'Nuevo Usuario' }}</h2>
+      
+      @if (errorMessage && errorMessage !== '') {
+        <div class="error-message">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage && successMessage !== '') {
+        <div class="success-message">{{ successMessage }}</div>
+      }
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Nombre de Usuario</label>
+          <input 
+            type="text" 
+            [(ngModel)]="username" 
+            name="username"
+            placeholder="Ingresa el nombre de usuario"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Telefono</label>
+          <div class="phone-input-group">
+            @if (!editingUserId) {
+              <input 
+                type="text" 
+                value="+521" 
+                readonly
+                class="phone-prefix"
+              />
+            }
+            <input 
+              type="text" 
+              [(ngModel)]="phone" 
+              name="phone"
+              placeholder="Ingresa el numero de telefono"
+              [maxlength]="editingUserId ? 14 : 10"
+              (keypress)="onKeyPress($event)"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contrasena</label>
+          <div class="password-input">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              [(ngModel)]="password" 
+              name="password"
+              placeholder="{{ editingUserId ? 'Nueva contrasena (opcional)' : 'Minimo 8 caracteres, 2 numeros, 1 caracter especial' }}"
+            />
+            <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+              @if (showPassword) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              }
+            </button>
+          </div>
+          @if (!editingUserId) {
+            <small class="hint">Minimo 8 caracteres, 2 numeros, 1 caracter especial</small>
+          }
+        </div>
+
+        @if (!editingUserId) {
+          <div class="form-group">
+            <label>Confirmar Contrasena</label>
+            <div class="password-input">
+              <input 
+                [type]="showConfirmPassword ? 'text' : 'password'" 
+                [(ngModel)]="confirmPassword" 
+                name="confirmPassword"
+                placeholder="Confirma la contrasena"
+                (blur)="validatePasswordMatch()"
+              />
+              <button type="button" class="toggle-password" (click)="toggleConfirmPasswordVisibility()">
+                @if (showConfirmPassword) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                }
+              </button>
+            </div>
+          </div>
+        }
+
+        <div class="form-group">
+          <label>Tipo de Usuario</label>
+          <select [(ngModel)]="selectedUserType" name="userType">
+            <option [value]="null">Selecciona un tipo de usuario</option>
+            @for (type of userTypes; track type.id) {
+              <option [ngValue]="type.id">{{ type.type }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="submit-btn" [disabled]="loading">
+            @if (loading) {
+              {{ editingUserId ? 'Actualizando...' : 'Creando...' }}
+            } @else {
+              {{ editingUserId ? 'Actualizar Usuario' : 'Crear Usuario' }}
+            }
+          </button>
+          
+          @if (editingUserId) {
+            <button type="button" class="cancel-btn" (click)="cancelEdit()">Cancelar</button>
+          }
+        </div>
+      </form>
+    </div>
+
+    @if (users.length > 0) {
+      <div class="users-table-section">
+        @if (tableErrorMessage && tableErrorMessage !== '') {
+          <div class="error-message">{{ tableErrorMessage }}</div>
+        }
+
+        @if (tableSuccessMessage && tableSuccessMessage !== '') {
+          <div class="success-message">{{ tableSuccessMessage }}</div>
+        }
+
+        <h3>Usuarios Registrados</h3>
+        <div class="table-wrapper">
+          <table class="users-table">
+<thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Telefono</th>
+                <th>Contrasena</th>
+                <th>Tipo</th>
+                <th class="desktop-actions-header">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users; track user.id) {
+                <tr class="user-row" (click)="onRowClick(user.id, $event)">
+                  <td>{{ user.user }}</td>
+                  <td>{{ user.phone || '-' }}</td>
+                  <td>
+                    <div class="password-cell">
+                      <span>{{ isPasswordVisible(user.id) ? user.password : '••••••••' }}</span>
+                      <button class="toggle-pass-btn" (click)="toggleTablePasswordVisibility(user.id)">
+                        @if (isPasswordVisible(user.id)) {
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        } @else {
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        }
+                      </button>
+                    </div>
+                  </td>
+                  <td>{{ getUserTypeName(user.user_type_id) }}</td>
+                  <td class="actions-cell desktop-actions">
+                    <button class="action-btn update" title="Actualizar" (click)="editUser(user)">✏️</button>
+                    <button class="action-btn delete" title="Eliminar" (click)="deleteUser(user)">🗑️</button>
+                  </td>
+                </tr>
+                @if (expandedUserId === user.id) {
+                  <tr class="mobile-actions-row">
+                    <td colspan="4">
+                      <div class="mobile-actions">
+                        <button class="action-btn update" title="Actualizar" (click)="editUser(user)">✏️</button>
+                        <button class="action-btn delete" title="Eliminar" (click)="deleteUser(user)">🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+</div>

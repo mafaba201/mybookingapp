@@ -1,0 +1,75 @@
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE',
+}
+
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+function getAuthToken(req: Request): string | null {
+  const authHeader = req.headers.get('authorization')
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7)
+  }
+  return null
+}
+
+function decodeJWT(token: string): { sub?: string } | null {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    
+    const payload = parts[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/')
+    
+    return JSON.parse(atob(payload))
+  } catch {
+    return null
+  }
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  const authToken = getAuthToken(req)
+  if (!authToken) {
+    return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: corsHeaders })
+  }
+
+  const decoded = decodeJWT(authToken)
+  if (!decoded?.sub) {
+    return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: corsHeaders })
+  }
+
+  const body = await req.json()
+  const { id } = body
+
+  if (!id) {
+    return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400, headers: corsHeaders })
+  }
+
+  const deleteResponse = await fetch(
+    `${supabaseUrl}/rest/v1/service?id=eq.${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'apikey': supabaseServiceKey,
+        'Authorization': `Bearer ${supabaseServiceKey}`
+      }
+    }
+  )
+
+  if (!deleteResponse.ok) {
+    const data = await deleteResponse.json()
+    return new Response(JSON.stringify({ error: data.message || 'Error' }), { 
+      status: deleteResponse.status, 
+      headers: corsHeaders 
+    })
+  }
+
+  return new Response(JSON.stringify({ message: 'Service deleted' }), { headers: corsHeaders })
+})

@@ -1,0 +1,23 @@
+<div class="finished-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goHome()">
+      <span class="logo-icon">✂</span>
+      <span>Barbería</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn-outline" (click)="goHome()">← Volver</button>
+    </div>
+  </nav>
+  <div class="finished-container">
+    <div class="success-icon">✓</div>
+    <h2>¡Reserva Confirmada!</h2>
+    <p>Tu cita ha sido generada de manera satisfactoria.</p>
+    <p>Te enviaremos un correo de confirmación.</p>
+    @if (barberPhone) {
+      <button class="whatsapp-btn" (click)="openWhatsApp()">
+        Contactar por WhatsApp
+      </button>
+    }
+    <button (click)="goHome()">Volver al Inicio</button>
+  </div>
+</div>

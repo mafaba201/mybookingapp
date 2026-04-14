@@ -1,0 +1,118 @@
+<div class="confirmation-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goHome()">
+      <span class="logo-icon">✂</span>
+      <span>Barbería</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn-outline" (click)="goHome()">← Volver</button>
+    </div>
+  </nav>
+  <div class="confirmation-container">
+    <div class="back-btn" (click)="goBack()">
+      ← Volver al calendario
+    </div>
+
+    <h2>Confirmar Reserva</h2>
+
+    <div class="appointment-summary">
+      <div class="summary-row">
+        <div class="summary-col">
+          <span class="label">Barbero:</span>
+          <span class="value">{{ barberName }}</span>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-col">
+          <span class="label">Fecha:</span>
+          <span class="value">{{ formattedDate }}</span>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-col">
+          <span class="label">Hora:</span>
+          <span class="value">{{ formattedTime }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-form">
+      
+      @if (errorMessage()) {
+        <div class="error">{{ errorMessage() }}</div>
+      }
+
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input 
+          type="text" 
+          [(ngModel)]="name" 
+          placeholder="Tu nombre"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input 
+          type="email" 
+          [(ngModel)]="email" 
+          placeholder="tu@email.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Teléfono</label>
+        <div class="phone-input-group">
+          <input 
+            type="text" 
+            [(ngModel)]="phoneCode" 
+            class="phone-code"
+            readonly
+          />
+          <input 
+            type="text" 
+            [(ngModel)]="phone" 
+            placeholder="1234567890"
+            class="phone-number"
+            maxlength="10"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Servicios</label>
+        <div class="services-list">
+          @for (service of availableServices; track service.id) {
+            <label class="service-checkbox">
+              <input 
+                type="checkbox" 
+                [value]="service.id"
+                [checked]="selectedServices.includes(service.id)"
+                (change)="onServiceChange(service.id, $event)"
+              />
+              <span class="service-name">{{ service.name }}</span>
+              <span class="service-price">${{ service.price }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Comentario adicional</label>
+        <textarea 
+          [(ngModel)]="comment" 
+          placeholder="Describe el motivo de tu reserva"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <button class="confirm-btn" (click)="confirmBooking()" [disabled]="loading()">
+        @if (loading()) {
+          Procesando...
+        } @else {
+          Confirmar Reserva
+        }
+      </button>
+    </div>
+  </div>
+</div>

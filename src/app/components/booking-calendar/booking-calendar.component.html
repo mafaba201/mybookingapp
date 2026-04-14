@@ -1,0 +1,79 @@
+<div class="booking-wrapper">
+  <nav class="navbar">
+    <div class="nav-logo" (click)="goHome()">
+      <span class="logo-icon">✂</span>
+      <span>Barbería</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn-outline" (click)="goHome()">← Volver</button>
+    </div>
+  </nav>
+  <div class="booking-container">
+    <div class="booking-main">
+      <div class="user-select">
+        <label for="barber-select">Selecciona barbero:</label>
+        <select id="barber-select" (change)="selectUser($event)" [attr.data-loaded]="users.length">
+          <option value="">-- Seleccionar --</option>
+          @for (user of users; track user.id) {
+            <option [value]="user.id">{{ user.user }}</option>
+          }
+        </select>
+      </div>
+      <div class="calendar-column">
+        <div class="calendar-header">
+          <button (click)="previousMonth()">←</button>
+          <h3>{{ monthYear }}</h3>
+          <button (click)="nextMonth()">→</button>
+        </div>
+        
+        <div class="calendar-grid">
+          @for (day of weekDays; track day) {
+            <div class="weekday">{{ day }}</div>
+          }
+          @for (day of daysInMonth; track $index) {
+            <div 
+              class="day" 
+              [class.empty]="day === 0"
+              [class.today]="isToday(day)"
+              [class.selected]="isSelected(day)"
+              [class.past]="isPast(day)"
+              (click)="selectDate(day)"
+            >
+              {{ day }}
+            </div>
+          }
+        </div>
+
+        @if (selectedDate()) {
+          <div class="time-slots-section">
+            <h4>Selecciona una hora</h4>
+            @if (loadingSlots()) {
+              <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Cargando horarios...</p>
+              </div>
+            } @else {
+              <div class="slots-grid">
+                @for (slot of availableSlots(); track slot.time) {
+                  <button 
+                    [class.selected]="selectedTime() === slot.time"
+                    [disabled]="!slot.available"
+                    (click)="selectTime(slot.time)"
+                  >
+                    {{ slot.time }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (selectedTime()) {
+            <button class="proceed-btn" (click)="proceedToForm()">
+              Continuar
+            </button>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+@if (!showBooking) {
+  <div class="home-container">
+    <nav class="navbar">
+      <div class="nav-logo" (click)="goHome()">
+        <span class="logo-icon">✂</span>
+        <span class="logo-text">Barbería</span>
+      </div>
+      <div class="nav-menu desktop-only">
+        <a class="nav-link" (click)="scrollTo('services')">Nuestros Servicios</a>
+        <a class="nav-link" (click)="scrollTo('about')">Nosotros</a>
+        <a class="nav-link" (click)="scrollTo('hours')">Horarios</a>
+      </div>
+      <div class="nav-links desktop-only">
+        <button class="nav-btn-outline" (click)="goToLogin()">
+          @if (isAuthenticated) {
+            📊 Panel de Control
+          } @else {
+            👤 Iniciar Sesión
+          }
+        </button>
+      </div>
+      <button class="hamburger-btn mobile-only" (click)="toggleMobileMenu(); $event.stopPropagation()">
+        @if (mobileMenuOpen) {
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        }
+      </button>
+      @if (mobileMenuOpen) {
+        <div class="mobile-menu" (click)="$event.stopPropagation()">
+          <a class="mobile-menu-link" (click)="scrollTo('services')">Nuestros Servicios</a>
+          <a class="mobile-menu-link" (click)="scrollTo('about')">Nosotros</a>
+          <a class="mobile-menu-link" (click)="scrollTo('hours')">Horarios</a>
+          <button class="mobile-menu-btn" (click)="goToLogin()">
+            @if (isAuthenticated) {
+              📊 Panel de Control
+            } @else {
+              👤 Iniciar Sesión
+            }
+          </button>
+        </div>
+      }
+    </nav>
+
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Estilo y Tradición</h1>
+        <p>Cortes de cabello profesionales con las últimas tendencias</p>
+        <button class="cta-btn" (click)="goToBooking()">Reserva tu cita</button>
+      </div>
+    </section>
+
+    <section class="services" id="services">
+      <h2>Nuestros Servicios</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">✂</div>
+          <h3>Corte de Cabello</h3>
+          <p>Corte clásico y moderno con técnica de precisión</p>
+          <span class="price">$250</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🪒</div>
+          <h3>Afeitado</h3>
+          <p>Afeitado tradicional con navaja caliente</p>
+          <span class="price">$150</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🎨</div>
+          <h3>Tinte</h3>
+          <p>Tinte profesional y decapado</p>
+          <span class="price">$400</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💈</div>
+          <h3>Arreglo de Barba</h3>
+          <p>Diseño y mantenimiento de barba</p>
+          <span class="price">$120</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <h2>Sobre Nosotros</h2>
+      <p>Con más de 10 años de experiencia, somos tu barbería de confianza. Nuestro equipo de profesionales te ofrece el mejor servicio en un ambiente cómodo y relajado.</p>
+    </section>
+
+    <section class="hours" id="hours">
+      <h2>Horarios</h2>
+      <div class="hours-grid">
+        <div class="day">Lunes - Viernes</div>
+        <div class="time">9:00 AM - 8:00 PM</div>
+        <div class="day">Sábado</div>
+        <div class="time">9:00 AM - 6:00 PM</div>
+        <div class="day">Domingo</div>
+        <div class="time">Cerrado</div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>📍 Av. Principal 123, Ciudad | 📞 (55) 1234-5678</p>
+    </footer>
+  </div>
+} @else {
+  <div class="booking-container">
+    <nav class="navbar">
+      <div class="nav-logo" (click)="goHome()">
+        <span class="logo-icon">✂</span>
+        <span>Barbería</span>
+      </div>
+      <div class="nav-links">
+        <button class="nav-btn-outline" (click)="goHome()">← Volver</button>
+      </div>
+    </nav>
+    <app-booking-calendar></app-booking-calendar>
+  </div>
+}
