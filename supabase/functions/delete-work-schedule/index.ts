@@ -1,7 +1,7 @@
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE',
 }
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -20,13 +20,9 @@ function decodeJWT(token: string): { sub?: string } | null {
     const parts = token.split('.')
     if (parts.length !== 3) return null
     
-    let payload = parts[1]
+    const payload = parts[1]
       .replace(/-/g, '+')
       .replace(/_/g, '/')
-    
-    while (payload.length % 4 !== 0) {
-      payload += '='
-    }
     
     return JSON.parse(atob(payload))
   } catch {
@@ -39,43 +35,40 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  const authToken = getAuthToken(req)
-  if (!authToken) {
+  const body = await req.json()
+  const { id, token } = body
+
+  if (!id) {
+    return new Response(JSON.stringify({ error: 'ID is required' }), { status: 400, headers: corsHeaders })
+  }
+
+  if (!token) {
     return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: corsHeaders })
   }
 
-  const decoded = decodeJWT(authToken)
+  const decoded = decodeJWT(token)
   if (!decoded?.sub) {
     return new Response(JSON.stringify({ error: 'Invalid token' }), { status: 401, headers: corsHeaders })
   }
 
-  const body = await req.json()
-  const { day, start_hour, end_hour } = body
-  const userId = decoded.sub
-
-  // Insert without user_id first - let RLS handle it
-  const insertResponse = await fetch(
-    `${supabaseUrl}/rest/v1/work_schedule`,
+  const deleteResponse = await fetch(
+    `${supabaseUrl}/rest/v1/work_schedule?id=eq.${id}`,
     {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         'apikey': supabaseServiceKey,
-        'Authorization': `Bearer ${supabaseServiceKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({ day, start_hour, end_hour })
+        'Authorization': `Bearer ${supabaseServiceKey}`
+      }
     }
   )
 
-  const data = await insertResponse.json()
-
-  if (!insertResponse.ok) {
-    return new Response(JSON.stringify({ error: data.message || 'Error', details: data }), { 
-      status: insertResponse.status, 
+  if (!deleteResponse.ok) {
+    const data = await deleteResponse.json()
+    return new Response(JSON.stringify({ error: data.message || 'Error' }), { 
+      status: deleteResponse.status, 
       headers: corsHeaders 
     })
   }
 
-  return new Response(JSON.stringify(data), { headers: corsHeaders })
+  return new Response(JSON.stringify({ message: 'Work schedule deleted' }), { headers: corsHeaders })
 })

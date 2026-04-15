@@ -590,7 +590,17 @@ export class SupabaseService {
     if (!token) return null;
     
     try {
-      const payload = token.split('.')[1];
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      
+      let payload = parts[1]
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+      
+      while (payload.length % 4) {
+        payload += '=';
+      }
+      
       const decoded = JSON.parse(atob(payload));
       return {
         userId: parseInt(decoded.sub),
@@ -672,6 +682,10 @@ export class SupabaseService {
     if (!token) {
       token = sessionStorage.getItem('auth_token');
     }
+
+    console.log('Token being used:', token);
+    console.log('Token length:', token?.length);
+    console.log('Token preview:', token?.substring(0, 50));
     
     if (!token) {
       return { error: 'No hay sesión activa' };
@@ -679,23 +693,27 @@ export class SupabaseService {
     
     try {
       const response = await fetch(
-        `${environment.supabaseUrl}/functions/v1/work-schedule?id=${id}`,
+        `${environment.supabaseUrl}/functions/v1/delete-work-schedule`,
         {
-          method: 'DELETE',
+          method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${environment.supabaseAnonKey}`,
             'apikey': environment.supabaseAnonKey
-          }
+          },
+          body: JSON.stringify({ id, token })
         }
       );
-      
-      const result = await response.json();
+
+      console.log('Delete response status:', response.status);
+      const responseText = await response.text();
+      console.log('Delete response text:', responseText);
       
       if (!response.ok) {
-        return { error: result.error || 'Error deleting work schedule' };
+        return { error: responseText };
       }
       
-      return { data: result };
+      return {};
     } catch (error: any) {
       console.error('Error deleting work schedule:', error);
       return { error: 'Error de conexión: ' + (error.message || 'Unknown error') };

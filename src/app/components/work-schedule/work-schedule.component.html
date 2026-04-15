@@ -72,13 +72,13 @@
             </tr>
           </thead>
           <tbody>
-            @for (slot of sortedTimeSlots; track $index) {
+            @for (slot of sortedTimeSlots; track slot.id) {
               <tr>
                 <td>{{ slot.day }}</td>
                 <td>{{ slot.startTime }}</td>
                 <td>{{ slot.endTime }}</td>
                 <td class="actions">
-                  <button class="action-btn delete" title="Eliminar" (click)="removeTimeSlot($index)">🗑️</button>
+                  <button class="action-btn delete" title="Eliminar" (click)="removeTimeSlot(slot.id!)">🗑️</button>
                 </td>
               </tr>
             }

@@ -177,10 +177,10 @@ export class WorkScheduleComponent implements OnInit {
     setTimeout(() => this.successMessage = '', 3000);
   }
 
-  async removeTimeSlot(index: number) {
-    const slot = this.timeSlots[index];
+  async removeTimeSlot(id: number) {
+    const slot = this.timeSlots.find(s => s.id === id);
     
-    if (slot.id) {
+    if (slot && slot.id) {
       this.loading = true;
       const result = await this.supabaseService.deleteWorkSchedule(slot.id);
       this.loading = false;
@@ -191,7 +191,7 @@ export class WorkScheduleComponent implements OnInit {
       }
     }
     
-    this.timeSlots.splice(index, 1);
+    this.timeSlots = this.timeSlots.filter(s => s.id !== id);
   }
 
   async saveSchedule() {

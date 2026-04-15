@@ -20,12 +20,20 @@ function decodeJWT(token: string): { sub?: string } | null {
     const parts = token.split('.')
     if (parts.length !== 3) return null
     
-    const payload = parts[1]
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
+    let payload = parts[1]
     
-    return JSON.parse(atob(payload))
-  } catch {
+    // Convert URL-safe base64 to standard base64 first
+    payload = payload.replace(/-/g, '+').replace(/_/g, '/')
+    
+    // Add padding if needed
+    while (payload.length % 4 !== 0) {
+      payload += '='
+    }
+    
+    const decoded = atob(payload)
+    return JSON.parse(decoded)
+  } catch (e) {
+    console.error('JWT decode error:', e)
     return null
   }
 }
@@ -59,12 +67,15 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify(data), { headers: corsHeaders })
   }
 
-  // POST/PUT/DELETE requieren autenticación
-  const decoded = authToken ? decodeJWT(authToken) : null
-  const userId = decoded?.sub
+  // Verificar JWT para operaciones protegidas
+  if (!authToken) {
+    return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: corsHeaders })
+  }
 
-  if (!userId) {
-    return new Response(JSON.stringify({ error: 'Autenticación requerida para modificar' }), { status: 401, headers: corsHeaders })
+  const decoded = decodeJWT(authToken)
+  console.log('Decoded token:', JSON.stringify(decoded))
+  if (!decoded?.sub) {
+    return new Response(JSON.stringify({ error: 'Invalid token', debug: 'Token decode failed' }), { status: 401, headers: corsHeaders })
   }
 
   // DELETE - delete work schedule

@@ -19,10 +19,10 @@ function loadEnvFile(envPath) {
 function getEnvVars() {
   const envVars = {};
   
-  if (process.env.SUPABASE_URL) {
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_URL !== 'https://tu-proyecto.supabase.co') {
     envVars.SUPABASE_URL = process.env.SUPABASE_URL;
   }
-  if (process.env.SUPABASE_ANON_KEY) {
+  if (process.env.SUPABASE_ANON_KEY && process.env.SUPABASE_ANON_KEY !== 'tu-anon-key') {
     envVars.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
   }
   
@@ -33,24 +33,23 @@ function updateEnvFile(filePath, envVars) {
   let content = fs.readFileSync(filePath, 'utf8');
   
   if (envVars.SUPABASE_URL) {
-    content = content.replace(
-      /supabaseUrl:\s*['"][^'"]*['"]/g,
-      `supabaseUrl: '${envVars.SUPABASE_URL}'`
-    );
+    const parts = content.split("'https://tu-proyecto.supabase.co'");
+    if (parts.length > 1) {
+      content = parts.join(`'${envVars.SUPABASE_URL}'`);
+    }
   }
   
   if (envVars.SUPABASE_ANON_KEY) {
-    content = content.replace(
-      /supabaseAnonKey:\s*['"][^'"]*['"]/g,
-      `supabaseAnonKey: '${envVars.SUPABASE_ANON_KEY}'`
-    );
+    const parts = content.split("'tu-anon-key'");
+    if (parts.length > 1) {
+      content = parts.join(`'${envVars.SUPABASE_ANON_KEY}'`);
+    }
   }
   
   fs.writeFileSync(filePath, content, 'utf8');
-  console.log(`Updated: ${filePath}`);
 }
 
-console.log('Running pre-build environment substitution...');
+
 
 const rootDir = path.resolve(__dirname, '..');
 
@@ -68,8 +67,6 @@ try {
   const processEnvVars = getEnvVars();
   envVars = { ...envVars, ...processEnvVars };
   
-  console.log('Loaded env vars:', Object.keys(envVars));
-  
   if (Object.keys(envVars).length > 0) {
     if (fs.existsSync(envDevPath)) {
       updateEnvFile(envDevPath, envVars);
@@ -78,10 +75,6 @@ try {
     if (fs.existsSync(envProdPath)) {
       updateEnvFile(envProdPath, envVars);
     }
-    
-    console.log('Environment variables injected successfully!');
-  } else {
-    console.log('No environment variables found, using existing values');
   }
 } catch (error) {
   console.error('Error:', error.message);
