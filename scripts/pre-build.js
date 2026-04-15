@@ -16,6 +16,19 @@ function loadEnvFile(envPath) {
   return envVars;
 }
 
+function getEnvVars() {
+  const envVars = {};
+  
+  if (process.env.SUPABASE_URL) {
+    envVars.SUPABASE_URL = process.env.SUPABASE_URL;
+  }
+  if (process.env.SUPABASE_ANON_KEY) {
+    envVars.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+  }
+  
+  return envVars;
+}
+
 function updateEnvFile(filePath, envVars) {
   let content = fs.readFileSync(filePath, 'utf8');
   
@@ -46,7 +59,14 @@ try {
   const envDevPath = path.join(rootDir, 'src/environments/environment.ts');
   const envProdPath = path.join(rootDir, 'src/environments/environment.prod.ts');
   
-  const envVars = fs.existsSync(envPath) ? loadEnvFile(envPath) : {};
+  let envVars = {};
+  
+  if (fs.existsSync(envPath)) {
+    envVars = loadEnvFile(envPath);
+  }
+  
+  const processEnvVars = getEnvVars();
+  envVars = { ...envVars, ...processEnvVars };
   
   console.log('Loaded env vars:', Object.keys(envVars));
   
