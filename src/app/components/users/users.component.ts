@@ -306,10 +306,12 @@ export class UsersComponent implements OnInit {
 
   onRowClick(userId: number, event: Event) {
     event.stopPropagation();
-    if (this.expandedUserId === userId) {
-      this.expandedUserId = null;
-    } else {
-      this.expandedUserId = userId;
+    if (window.innerWidth <= 768) {
+      if (this.expandedUserId === userId) {
+        this.expandedUserId = null;
+      } else {
+        this.expandedUserId = userId;
+      }
     }
   }
 

@@ -238,7 +238,8 @@
 
 .clients-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: #2d2d2d;
   border-radius: 12px;
   overflow: hidden;
@@ -263,9 +264,14 @@
   tbody {
     tr {
       border-bottom: 1px solid #444;
+      cursor: pointer;
       
       &:last-child {
         border-bottom: none;
+      }
+      
+      &.expanded {
+        background: rgba(139, 92, 246, 0.15);
       }
       
       td {
@@ -282,6 +288,75 @@
       &:hover {
         background: rgba(139, 92, 246, 0.05);
       }
+    }
+  }
+}
+
+.desktop-actions-header {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.mobile-actions-row {
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: table-row;
+    background: #333;
+    
+    td {
+      padding: 15px 10px;
+    }
+  }
+}
+
+.mobile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  
+  @media (max-width: 480px) {
+    gap: 12px;
+  }
+  
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 70px;
+    background: #555;
+    color: white;
+    
+    @media (max-width: 480px) {
+      padding: 10px 14px;
+      min-width: 75px;
+    }
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    span {
+      font-size: 10px;
+      white-space: nowrap;
+      
+      @media (max-width: 480px) {
+        font-size: 11px;
+      }
+    }
+    
+    &:hover {
+      background: #777;
     }
   }
 }

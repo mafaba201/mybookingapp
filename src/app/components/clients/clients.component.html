@@ -42,32 +42,50 @@
     } @else if (filteredClients.length === 0) {
       <div class="no-data">No se encontraron clientes</div>
     } @else {
-      <table class="clients-table">
+      <div class="table-wrapper">
+        <table class="clients-table">
         <thead>
           <tr>
             <th>Nombre</th>
             <th>Email</th>
             <th>Teléfono</th>
-            <th></th>
+            <th class="desktop-actions-header"></th>
           </tr>
         </thead>
         <tbody>
           @for (client of filteredClients; track client.id) {
-            <tr>
-              <td>{{ client.name }}</td>
-              <td>{{ client.email }}</td>
-              <td>{{ client.phone }}</td>
-              <td class="message-cell">
-                <button class="message-btn" (click)="openMessage(client.phone); $event.stopPropagation()">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                  </svg>
-                </button>
-              </td>
-            </tr>
+            <ng-container>
+              <tr (click)="onRowClick(client.id)" [class.expanded]="expandedClientId === client.id">
+                <td>{{ client.name }}</td>
+                <td>{{ client.email }}</td>
+                <td>{{ client.phone }}</td>
+                <td class="desktop-actions-header">
+                  <button class="message-btn" (click)="openMessage(client.phone); $event.stopPropagation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              @if (expandedClientId === client.id) {
+                <tr class="mobile-actions-row">
+                  <td colspan="4">
+                    <div class="mobile-actions">
+                      <button class="message-btn" (click)="openMessage(client.phone); $event.stopPropagation()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>WhatsApp</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </ng-container>
           }
         </tbody>
       </table>
+      </div>
     }
   </div>
 </div>

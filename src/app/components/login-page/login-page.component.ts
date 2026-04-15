@@ -27,7 +27,7 @@ export class LoginPageComponent {
     this.errorMessage = '';
     
     if (!this.email || !this.password) {
-      this.errorMessage = 'Por favor ingresa email y contrasena';
+      this.errorMessage = 'Por favor ingresa username y contrasena';
       return;
     }
 

@@ -6,6 +6,11 @@
   
   @media (max-width: 768px) {
     padding-top: 60px;
+    background: #1a1a1a;
+    
+    &::before, &::after {
+      display: none;
+    }
   }
   
   &::before {

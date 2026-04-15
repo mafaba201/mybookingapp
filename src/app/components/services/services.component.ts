@@ -160,7 +160,7 @@ export class ServicesComponent implements OnInit {
 
   onRowClick(serviceId: number | undefined, event: Event) {
     event.stopPropagation();
-    if (serviceId) {
+    if (serviceId && window.innerWidth <= 768) {
       this.expandedServiceId = this.expandedServiceId === serviceId ? null : serviceId;
     }
   }

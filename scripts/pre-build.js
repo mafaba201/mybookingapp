@@ -21,14 +21,14 @@ function updateEnvFile(filePath, envVars) {
   
   if (envVars.SUPABASE_URL) {
     content = content.replace(
-      /supabaseUrl:\s*['"][^'"]*['"]/,
+      /supabaseUrl:\s*['"][^'"]*['"]/g,
       `supabaseUrl: '${envVars.SUPABASE_URL}'`
     );
   }
   
   if (envVars.SUPABASE_ANON_KEY) {
     content = content.replace(
-      /supabaseAnonKey:\s*['"][^'"]*['"]/,
+      /supabaseAnonKey:\s*['"][^'"]*['"]/g,
       `supabaseAnonKey: '${envVars.SUPABASE_ANON_KEY}'`
     );
   }
@@ -41,34 +41,22 @@ console.log('Running pre-build environment substitution...');
 
 const rootDir = path.resolve(__dirname, '..');
 
-const envVars = {};
-
-if (process.env.SUPABASE_URL) {
-  envVars.SUPABASE_URL = process.env.SUPABASE_URL;
-}
-
-if (process.env.SUPABASE_ANON_KEY) {
-  envVars.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-}
-
 try {
   const envPath = path.join(rootDir, '.env');
   const envDevPath = path.join(rootDir, 'src/environments/environment.ts');
   const envProdPath = path.join(rootDir, 'src/environments/environment.prod.ts');
   
-  const fileEnvVars = fs.existsSync(envPath) ? loadEnvFile(envPath) : {};
+  const envVars = fs.existsSync(envPath) ? loadEnvFile(envPath) : {};
   
-  const finalEnvVars = { ...fileEnvVars, ...envVars };
+  console.log('Loaded env vars:', Object.keys(envVars));
   
-  console.log('Loaded env vars:', Object.keys(finalEnvVars));
-  
-  if (Object.keys(finalEnvVars).length > 0) {
+  if (Object.keys(envVars).length > 0) {
     if (fs.existsSync(envDevPath)) {
-      updateEnvFile(envDevPath, finalEnvVars);
+      updateEnvFile(envDevPath, envVars);
     }
     
     if (fs.existsSync(envProdPath)) {
-      updateEnvFile(envProdPath, finalEnvVars);
+      updateEnvFile(envProdPath, envVars);
     }
     
     console.log('Environment variables injected successfully!');

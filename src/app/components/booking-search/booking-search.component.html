@@ -86,37 +86,69 @@
               </thead>
               <tbody>
                 @for (booking of bookings(); track booking.id) {
-                  <tr (click)="toggleBookingActions(booking.id)" [class.canceled-row]="booking.canceled">
-                    <td>{{ booking.start_time }}</td>
-                    <td>{{ booking.client?.name }}</td>
-                    <td>{{ booking.client?.phone }}</td>
-                    <td>{{ booking.client?.email }}</td>
-                    <td class="desktop-actions-header">
-                      <button class="view-btn" (click)="viewBooking(booking); $event.stopPropagation()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-                          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                      </button>
-                    </td>
-                    <td class="desktop-actions-header">
-                      <button class="message-btn" (click)="openWhatsApp(booking.client?.phone); $event.stopPropagation()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                      </button>
-                    </td>
-                    <td class="desktop-actions-header">
-                      <button 
-                        class="cancel-btn" 
-                        [class.disabled]="booking.canceled" 
-                        [disabled]="booking.canceled"
-                        (click)="cancelBooking(booking); $event.stopPropagation()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
+                  <ng-container>
+                    <tr (click)="toggleBookingActions(booking.id)" [class.canceled-row]="booking.canceled" [class.expanded]="expandedBookingId === booking.id">
+                      <td>{{ booking.start_time }}</td>
+                      <td>{{ booking.client?.name }}</td>
+                      <td>{{ booking.client?.phone }}</td>
+                      <td>{{ booking.client?.email }}</td>
+                      <td class="desktop-actions-header">
+                        <button class="view-btn" (click)="viewBooking(booking); $event.stopPropagation()">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                          </svg>
+                        </button>
+                      </td>
+                      <td class="desktop-actions-header">
+                        <button class="message-btn" (click)="openWhatsApp(booking.client?.phone); $event.stopPropagation()">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                          </svg>
+                        </button>
+                      </td>
+                      <td class="desktop-actions-header">
+                        <button 
+                          class="cancel-btn" 
+                          [class.disabled]="booking.canceled" 
+                          [disabled]="booking.canceled"
+                          (click)="cancelBooking(booking); $event.stopPropagation()">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                    @if (expandedBookingId === booking.id) {
+                      <tr class="mobile-actions-row">
+                        <td colspan="7">
+                          <div class="mobile-actions">
+                            <button class="view-btn" (click)="viewBooking(booking); $event.stopPropagation()">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                              </svg>
+                              <span>Ver</span>
+                            </button>
+                            <button class="message-btn" (click)="openWhatsApp(booking.client?.phone); $event.stopPropagation()">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                              </svg>
+                              <span>WhatsApp</span>
+                            </button>
+                            <button 
+                              class="cancel-btn" 
+                              [class.disabled]="booking.canceled" 
+                              [disabled]="booking.canceled"
+                              (click)="cancelBooking(booking); $event.stopPropagation()">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                              </svg>
+                              <span>Cancelar</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </ng-container>
                 }
               </tbody>
             </table>

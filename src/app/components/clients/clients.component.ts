@@ -25,6 +25,7 @@ export class ClientsComponent implements OnInit {
   loading = false;
   errorMessage = '';
   mobileMenuOpen = false;
+  expandedClientId: number | null = null;
 
   constructor(
     private router: Router,
@@ -73,6 +74,16 @@ export class ClientsComponent implements OnInit {
 
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  onRowClick(clientId: number) {
+    if (window.innerWidth <= 768) {
+      if (this.expandedClientId === clientId) {
+        this.expandedClientId = null;
+      } else {
+        this.expandedClientId = clientId;
+      }
+    }
   }
 
   @HostListener('document:click')
