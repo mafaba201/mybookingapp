@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    @if (timeSlots.length > 0) {
+    @if (sortedTimeSlots.length > 0) {
       <div class="users-table-section">
         <h3>Horarios Registrados</h3>
         <table class="users-table">
@@ -72,7 +72,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (slot of timeSlots; track $index) {
+            @for (slot of sortedTimeSlots; track $index) {
               <tr>
                 <td>{{ slot.day }}</td>
                 <td>{{ slot.startTime }}</td>
@@ -85,13 +85,7 @@
           </tbody>
         </table>
 
-        <button type="button" class="submit-btn" (click)="saveSchedule()" [disabled]="loading">
-          @if (loading) {
-            Guardando...
-          } @else {
-            Guardar Horario
-          }
-        </button>
+        
       </div>
     }
   </div>

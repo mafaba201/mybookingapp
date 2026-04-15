@@ -20,12 +20,29 @@ interface TimeSlot {
 })
 export class WorkScheduleComponent implements OnInit {
   days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  dayOrder: { [key: string]: number } = {
+    'Lunes': 0,
+    'Martes': 1,
+    'Miércoles': 2,
+    'Jueves': 3,
+    'Viernes': 4,
+    'Sábado': 5,
+    'Domingo': 6
+  };
   
   selectedDay = '';
   startTime = '';
   endTime = '';
   
   timeSlots: TimeSlot[] = [];
+
+  get sortedTimeSlots(): TimeSlot[] {
+    return [...this.timeSlots].sort((a, b) => {
+      const orderA = this.dayOrder[a.day] ?? 7;
+      const orderB = this.dayOrder[b.day] ?? 7;
+      return orderA - orderB;
+    });
+  }
   
   errorMessage = '';
   successMessage = '';
